@@ -31,6 +31,10 @@ app.use('/api', activeRoutes);
 app.use('/api/actividades', routesActividades);
 
 
+// Ruta de prueba
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'Ruta de prueba funcionando correctamente del backend' });
+});
 // Conexión a la base de datos
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a MongoDB'))
