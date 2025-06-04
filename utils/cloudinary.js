@@ -3,12 +3,11 @@ const multer = require('multer');
 const dotenv = require('dotenv');
 
 dotenv.config();
-
 // Configuración de Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDE_NAME,
-  api_key: process.env.API_KEY,
-  api_secret:process.env.API_SECRET,
+  cloud_name: 'dcwwhkqb2',
+  api_key: '788922753142331',
+  api_secret:'GApym06yGKC6ukfOweG-EwKW2Ng',
 });
 
 // Configuración de Multer para subir archivos en memoria
