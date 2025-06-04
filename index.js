@@ -35,8 +35,9 @@ app.use('/api/actividades', routesActividades);
 app.get('/test', (req, res) => {
   res.status(200).json({ message: 'Ruta de prueba funcionando correctamente del backend' });
 });
-// Conexión a la base de datos
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// Conexión a la base de datos process.env.MONGO_URI
+                        
+mongoose.connect('mongodb+srv://sentidospadres:sentidospadres@cluster0.s54amhc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error de conexión', err));
 
