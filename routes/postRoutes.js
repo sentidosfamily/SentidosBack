@@ -1,0 +1,20 @@
+const express = require('express');
+const router = express.Router();
+const postController = require('../controllers/postController');
+
+// Crear un nuevo post
+router.post('/posts', postController.crearPost);
+
+// Obtener todos los posts
+router.get('/posts', postController.obtenerPosts);
+
+// Obtener un post por ID
+router.get('/posts/:id', postController.obtenerPostPorId);
+
+// Actualizar un post por ID
+router.put('/posts/:id', postController.actualizarPost);
+
+// Eliminar un post por ID
+router.delete('/posts/:id', postController.eliminarPost);
+
+module.exports = router;
