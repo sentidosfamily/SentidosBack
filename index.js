@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas
 // app.use('/api', testRoutes);
 app.use('/api', changePassword);
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 app.use('/api',sociosRoutes);
 app.use('/api',postRoutes);
 app.use('/api', uploadRoutes);
