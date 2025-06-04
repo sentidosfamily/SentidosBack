@@ -32,7 +32,7 @@ app.use('/api/actividades', routesActividades);
 
 
 // Ruta de prueba
-app.get('/api/test', (req, res) => {
+app.get('/test', (req, res) => {
   res.status(200).json({ message: 'Ruta de prueba funcionando correctamente del backend' });
 });
 // Conexión a la base de datos
