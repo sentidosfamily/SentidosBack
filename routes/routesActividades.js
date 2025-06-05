@@ -5,7 +5,26 @@ const Actividad = require('../models/actividades');
 // Crear actividad
 router.post('/', async (req, res) => {
   try {
-    const nuevaActividad = new Actividad(req.body);
+    const {
+      titulo,
+      imagen,
+      fecha,
+      hora,
+      direccion,
+      organizador,
+      objetivo,
+    } = req.body;
+
+    const nuevaActividad = new Actividad({
+      titulo,
+      imagen: imagen || 'https://via.placeholder.com/150',
+      fecha,
+      hora,
+      direccion,
+      organizador,
+      objetivo,
+    });
+
     const saved = await nuevaActividad.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -26,7 +45,30 @@ router.get('/', async (req, res) => {
 // Editar actividad
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await Actividad.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const {
+      titulo,
+      imagen,
+      fecha,
+      hora,
+      direccion,
+      organizador,
+      objetivo,
+    } = req.body;
+
+    const updateData = {
+      titulo,
+      fecha,
+      hora,
+      direccion,
+      organizador,
+      objetivo,
+    };
+
+    if (imagen) {
+      updateData.imagen = imagen;
+    }
+
+    const updated = await Actividad.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json(updated);
   } catch (error) {
     res.status(400).json({ error: error.message });
