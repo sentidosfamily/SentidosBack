@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Actividad = require('../models/actividades');
+const { upload } = require('../utils/cloudinary'); // Importar Cloudinary
 
 // Crear actividad
 router.post('/', async (req, res) => {
@@ -15,9 +16,16 @@ router.post('/', async (req, res) => {
       objetivo,
     } = req.body;
 
+    let imagenSubida = 'https://via.placeholder.com/150';
+
+    if (imagen) {
+      const uploadRes = await upload(imagen);
+      imagenSubida = uploadRes.secure_url;
+    }
+
     const nuevaActividad = new Actividad({
       titulo,
-      imagen: imagen || 'https://via.placeholder.com/150',
+      imagen: imagenSubida,
       fecha,
       hora,
       direccion,
@@ -65,7 +73,8 @@ router.put('/:id', async (req, res) => {
     };
 
     if (imagen) {
-      updateData.imagen = imagen;
+      const uploadRes = await upload(imagen);
+      updateData.imagen = uploadRes.secure_url;
     }
 
     const updated = await Actividad.findByIdAndUpdate(req.params.id, updateData, { new: true });
