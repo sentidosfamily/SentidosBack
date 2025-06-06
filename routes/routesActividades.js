@@ -1,38 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Actividad = require('../models/actividades');
-const { upload } = require('../utils/cloudinary'); // Importar Cloudinary
 
 // Crear actividad
 router.post('/', async (req, res) => {
   try {
-    const {
-      titulo,
-      imagen,
-      fecha,
-      hora,
-      direccion,
-      organizador,
-      objetivo,
-    } = req.body;
-
-    let imagenSubida = 'https://via.placeholder.com/150';
-
-    if (imagen) {
-      const uploadRes = await upload(imagen);
-      imagenSubida = uploadRes.secure_url;
-    }
-
-    const nuevaActividad = new Actividad({
-      titulo,
-      imagen: imagenSubida,
-      fecha,
-      hora,
-      direccion,
-      organizador,
-      objetivo,
-    });
-
+    const nuevaActividad = new Actividad(req.body);
     const saved = await nuevaActividad.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -53,31 +26,7 @@ router.get('/', async (req, res) => {
 // Editar actividad
 router.put('/:id', async (req, res) => {
   try {
-    const {
-      titulo,
-      imagen,
-      fecha,
-      hora,
-      direccion,
-      organizador,
-      objetivo,
-    } = req.body;
-
-    const updateData = {
-      titulo,
-      fecha,
-      hora,
-      direccion,
-      organizador,
-      objetivo,
-    };
-
-    if (imagen) {
-      const uploadRes = await upload(imagen);
-      updateData.imagen = uploadRes.secure_url;
-    }
-
-    const updated = await Actividad.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const updated = await Actividad.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
   } catch (error) {
     res.status(400).json({ error: error.message });
