@@ -1,3 +1,23 @@
+// const express = require('express');
+// const router = express.Router();
+// const postController = require('../controllers/postController');
+
+// // Crear un nuevo post
+// router.post('/posts', postController.crearPost);
+
+// // Obtener todos los posts
+// router.get('/posts', postController.obtenerPosts);
+
+// // Obtener un post por ID
+// router.get('/posts/:id', postController.obtenerPostPorId);
+
+// // Actualizar un post por ID
+// router.put('/posts/:id', postController.actualizarPost);
+
+// // Eliminar un post por ID
+// router.delete('/posts/:id', postController.eliminarPost);
+
+// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController');
@@ -9,12 +29,12 @@ router.post('/posts', postController.crearPost);
 router.get('/posts', postController.obtenerPosts);
 
 // Obtener un post por ID
-router.get('/posts/:id', postController.obtenerPostPorId);
+router.get('/posts/:PostId', postController.obtenerPostPorId);
 
 // Actualizar un post por ID
-router.put('/posts/:id', postController.actualizarPost);
+router.put('/posts/:PostId', postController.actualizarPost);
 
 // Eliminar un post por ID
-router.delete('/posts/:id', postController.eliminarPost);
+router.delete('/posts/:PostId', postController.eliminarPost);
 
 module.exports = router;
