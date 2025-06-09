@@ -1,20 +1,20 @@
+const mongoose = require('mongoose');
 const Socio = require('../models/Socio');
 const SocioPorCiudad = require('../models/SocioPorCiudad');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-// Transportador básico con Gmail (reemplazá con tus datos reales o .env)
+// Transportador básico con Gmail
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',  // el servidor SMTP de Gmail
-    port: 465,               // puerto seguro SSL
-    secure: true,  
-    auth: {
-      user: 'sentidospadres@gmail.com',
-      pass: 'pjcs dzob wtjk wetc' // Generá una "contraseña de aplicación" desde tu cuenta Google
-    }
-  });
-
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'sentidospadres@gmail.com',
+    pass: 'pjcs dzob wtjk wetc'
+  }
+});
 
 exports.registrarSocio = async (req, res) => {
   try {
@@ -28,13 +28,17 @@ exports.registrarSocio = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Ya existe un socio con esos datos.' });
     }
 
+    const idUnico = new mongoose.Types.ObjectId(); // ID compartido
+
     // Obtener número de socio secuencial
     const ultimoSocio = await Socio.findOne().sort({ numeroSocio: -1 });
     const nuevoNumero = ultimoSocio ? ultimoSocio.numeroSocio + 1 : 1;
 
-    // Crear socio con cuota
-    const cuotaAnual = 12; // Cuota anual fija (12 meses)
+    const cuotaAnual = 12;
+
+    // Crear socio
     const nuevoSocio = new Socio({
+      _id: idUnico,
       nombre,
       apellido,
       correo,
@@ -42,26 +46,28 @@ exports.registrarSocio = async (req, res) => {
       provincia,
       ciudad,
       numeroSocio: nuevoNumero,
-      cuota: cuotaAnual // Agregamos la cuota anual
+      cuota: cuotaAnual
     });
     await nuevoSocio.save();
 
-    // Registrar en ciudad
+    // Registrar socio por ciudad
     if (ciudad) {
       const socioCiudad = new SocioPorCiudad({
+        _id: idUnico,
         ciudad,
         correo,
         provincia,
-        socioId: nuevoSocio._id
+        socioId: idUnico
       });
       await socioCiudad.save();
     }
 
     // Generar usuario y contraseña
-    const password = crypto.randomBytes(6).toString('hex'); // contraseña aleatoria
+    const password = crypto.randomBytes(6).toString('hex');
     const username = correo.toLowerCase();
 
     const nuevoUsuario = new User({
+      _id: idUnico,
       username,
       password,
       role: 'socio'
@@ -89,7 +95,7 @@ exports.registrarSocio = async (req, res) => {
             <p style="margin-top: 20px;">🔐 Por tu seguridad, al ingresar por primera vez se te pedirá que cambies esta contraseña.</p>
 
             <div style="text-align: center; margin: 25px 0;">
-              <a href="https://frontend-sentidos.com/login" target="_blank" style="background-color: #005b4f; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-size: 16px;">
+              <a href="https://sentidos-front.vercel.app/login" target="_blank" style="background-color: #005b4f; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-size: 16px;">
                 Ingresar a la plataforma
               </a>
             </div>
