@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 
 exports.crearPost = async (req, res) => {
   try {
-    const { titulo, autor, epigrafe, portada, contenido, imagenes, epigrafes, fecha,categoria,avatar } = req.body;
+    const { titulo, autor, epigrafe, portada, contenido, imagenes, epigrafes, fecha,categoria,avatar,PostId } = req.body;
 
     if (!titulo || !autor || !contenido) {
       return res.status(400).json({ error: 'Título, autor y contenido son obligatorios' });
@@ -18,6 +18,7 @@ exports.crearPost = async (req, res) => {
       epigrafes,
       categoria,
       avatar,
+      PostId,
       fecha: fecha || Date.now()
     });
 
@@ -41,7 +42,7 @@ exports.obtenerPosts = async (req, res) => {
 
 exports.obtenerPostPorId = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.PostId);
     if (!post) return res.status(404).json({ error: 'Post no encontrado' });
     res.json(post);
   } catch (error) {
@@ -54,7 +55,7 @@ exports.actualizarPost = async (req, res) => {
   try {
     const { titulo, autor, epigrafe, portada, contenido, imagenes, epigrafes,categoria,fecha } = req.body;
     const postActualizado = await Post.findByIdAndUpdate(
-      req.params.id,
+      req.params.PostId,
       { titulo, autor, epigrafe, portada, contenido, imagenes, epigrafes,categoria, fecha },
       { new: true, runValidators: true }
     );
@@ -70,7 +71,7 @@ exports.actualizarPost = async (req, res) => {
 
 exports.eliminarPost = async (req, res) => {
   try {
-    const postEliminado = await Post.findByIdAndDelete(req.params.id);
+    const postEliminado = await Post.findByIdAndDelete(req.params.PostId);
     if (!postEliminado) return res.status(404).json({ error: 'Post no encontrado' });
 
     res.json({ message: 'Post eliminado con éxito' });
