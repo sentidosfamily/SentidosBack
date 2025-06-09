@@ -12,7 +12,8 @@ const socioSchema = new mongoose.Schema({
   cuota: { type: Number, default: 12 },
   avatar: { type: String },
   active: { type: Boolean, default: true },
-  freezeUntil: { type: Date, default: null }
+  freezeUntil: { type: Date, default: null },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // 👈 Nuevo campo
 });
 
 const Socio = mongoose.model("Socio", socioSchema);
