@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   },
   active: { type: Boolean, default: true },
   freezeUntil: { type: Date, default: null },
+  socioId: { type: mongoose.Schema.Types.ObjectId, ref: "Socio" } 
 });
 
 // Middleware: antes de guardar, hashea la contraseña si fue modificada
