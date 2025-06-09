@@ -11,6 +11,7 @@ const PostSchema = new mongoose.Schema({
   categoria: [String],
   avatar: { type: String },
   fecha: { type: Date, default: Date.now },
+  PostId: { type: String, required: true },  // userId como string
 });
 
 module.exports = mongoose.model("Post", PostSchema);
