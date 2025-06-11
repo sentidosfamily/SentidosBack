@@ -5,16 +5,16 @@ const crypto = require("crypto");
 
 // Configura tu transporte de Nodemailer
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // el servidor SMTP de Gmail
-  port: 465, // puerto seguro SSL
+  host: "smtp.gmail.com",
+  port: 465,
   secure: true,
   auth: {
     user: "sentidospadres@gmail.com",
-    pass: "pjcs dzob wtjk wetc", // Generá una "contraseña de aplicación" desde tu cuenta Google
+    pass: "pjcs dzob wtjk wetc",
   },
 });
 
-// Enviar código al correo
+// ✅ Enviar código al correo
 const sendVerificationCode = async (req, res) => {
   const { correo } = req.body;
 
@@ -28,7 +28,7 @@ const sendVerificationCode = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    const code = crypto.randomInt(100000, 999999).toString(); // Código de 6 dígitos
+    const code = crypto.randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 15 * 60000); // 15 minutos
 
     await VerificationCode.findOneAndUpdate(
@@ -44,26 +44,14 @@ const sendVerificationCode = async (req, res) => {
       html: `
 <div style="font-family: Arial, sans-serif; color: #333;">
   <p>Hola,</p>
-
   <p>Tu código de verificación es:</p>
-
-  <p style="font-size: 24px; color: #007bff; font-weight: bold;">
-    ${code}
-  </p>
-
+  <p style="font-size: 24px; color: #007bff; font-weight: bold;">${code}</p>
   <p>⚡ Este código es válido por <strong>15 minutos</strong>.</p>
-
-  <p style="color: red; font-weight: bold;">
-    Por favor, no compartas este código con nadie.
-  </p>
-
-  <p style="font-size: 12px; color: gray;">
-    Si no solicitaste este código, simplemente ignora este correo.
-  </p>
-
+  <p style="color: red; font-weight: bold;">Por favor, no compartas este código con nadie.</p>
+  <p style="font-size: 12px; color: gray;">Si no solicitaste este código, simplemente ignora este correo.</p>
   <p>¡Gracias! Equipo Sentidos</p>
 </div>
-`,
+      `,
     });
 
     res.json({ message: "Código enviado al correo." });
@@ -73,7 +61,7 @@ const sendVerificationCode = async (req, res) => {
   }
 };
 
-// Cambiar la contraseña usando el código
+// ✅ Cambiar la contraseña con código
 const changePassword = async (req, res) => {
   const { correo, nuevaPassword, code } = req.body;
 
@@ -88,6 +76,7 @@ const changePassword = async (req, res) => {
       correo: correo.toLowerCase(),
       code,
     });
+
     if (!verification || verification.expiresAt < new Date()) {
       return res.status(400).json({ error: "Código inválido o expirado." });
     }
@@ -97,7 +86,7 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    user.password = nuevaPassword;
+    user.password = nuevaPassword; // el hash lo hace el pre('save')
     await user.save();
 
     await VerificationCode.deleteOne({ _id: verification._id });
@@ -109,4 +98,34 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { sendVerificationCode, changePassword };
+// ✅ Cambiar la contraseña logueado
+const changePasswordLoggedIn = async (req, res) => {
+  const { nuevaPassword } = req.body;
+  const userId = req.user.id; // Requiere middleware de autenticación
+
+  if (!nuevaPassword || nuevaPassword.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "La contraseña debe tener al menos 6 caracteres." });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ error: "Usuario no encontrado." });
+
+    user.password = nuevaPassword; // el hash lo hace el pre('save')
+    await user.save();
+
+    res.json({ success: true, message: "Contraseña actualizada correctamente." });
+  } catch (error) {
+    console.error("Error cambiando contraseña:", error);
+    res.status(500).json({ error: "Error interno del servidor." });
+  }
+};
+
+module.exports = {
+  sendVerificationCode,
+  changePassword,
+  changePasswordLoggedIn,
+};
